@@ -1,71 +1,80 @@
-let allJobs = [];
-let currentFilter = "All";
+const jobs = [
+  {
+    title: "Communication Officer",
+    organization: "UNDP",
+    location: "Bangkok, Thailand",
+    category: "Communications",
+    deadline: "30 June 2026",
+    url: "https://jobs.undp.org/"
+  },
+  {
+    title: "Public Information Officer",
+    organization: "United Nations Secretariat",
+    location: "New York, USA",
+    category: "Public Information",
+    deadline: "5 July 2026",
+    url: "https://careers.un.org/"
+  },
+  {
+    title: "Social Media Specialist",
+    organization: "UNICEF",
+    location: "Geneva, Switzerland",
+    category: "Digital / Social Media",
+    deadline: "12 July 2026",
+    url: "https://jobs.unicef.org/"
+  }
+];
 
-const jobsGrid = document.getElementById("jobsGrid");
+const grid = document.getElementById("jobsGrid");
 const searchInput = document.getElementById("searchInput");
+const buttons = document.querySelectorAll(".filters button");
 const jobCount = document.getElementById("jobCount");
 const lastUpdated = document.getElementById("lastUpdated");
-const filters = document.getElementById("filters");
 
-async function loadJobs() {
-  try {
-    const response = await fetch("jobs.json?t=" + Date.now());
-    allJobs = await response.json();
-    renderJobs();
-    lastUpdated.textContent = "Last checked: " + new Date().toLocaleDateString();
-  } catch (error) {
-    jobsGrid.innerHTML = `<p>Could not load jobs.json.</p>`;
-  }
-}
+let currentFilter = "All";
 
 function renderJobs() {
-  const query = searchInput.value.toLowerCase().trim();
-  const filtered = allJobs.filter(job => {
-    const text = [job.title, job.organization, job.department, job.location, job.level, job.category].join(" ").toLowerCase();
-    return text.includes(query) && (currentFilter === "All" || job.category === currentFilter);
+  const search = searchInput.value.toLowerCase();
+
+  const filteredJobs = jobs.filter(job => {
+    const matchesFilter = currentFilter === "All" || job.category === currentFilter;
+
+    const matchesSearch =
+      job.title.toLowerCase().includes(search) ||
+      job.organization.toLowerCase().includes(search) ||
+      job.location.toLowerCase().includes(search);
+
+    return matchesFilter && matchesSearch;
   });
 
-  jobCount.textContent = `${filtered.length} opportunities found`;
+  grid.innerHTML = "";
 
-  if (!filtered.length) {
-    jobsGrid.innerHTML = `<p>No matching jobs right now.</p>`;
-    return;
-  }
+  filteredJobs.forEach(job => {
+    grid.innerHTML += `
+      <article class="job-card">
+        <span class="tag">${job.category}</span>
+        <h2>${job.title}</h2>
+        <p><strong>Organization:</strong> ${job.organization}</p>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p class="deadline">Deadline: ${job.deadline}</p>
+        <a href="${job.url}" target="_blank">View position →</a>
+      </article>
+    `;
+  });
 
-  jobsGrid.innerHTML = filtered.map(job => `
-    <article class="job-card">
-      <div>
-        <div class="card-top">
-          ${job.is_new ? `<span class="tag new">NEW</span>` : ""}
-          <span class="tag">${escapeHTML(job.category || "Opportunity")}</span>
-          <span class="tag">${escapeHTML(job.source || "UN")}</span>
-        </div>
-        <h2 class="job-title">${escapeHTML(job.title || "Untitled role")}</h2>
-        <p class="meta">${escapeHTML(job.organization || "UN")} · ${escapeHTML(job.location || "Location not listed")}</p>
-        <p class="meta">${escapeHTML(job.level || "Level not listed")}</p>
-        <p class="deadline">Deadline: ${escapeHTML(job.deadline || "Not listed")}</p>
-      </div>
-      <a class="job-link" href="${job.link}" target="_blank" rel="noopener">View role →</a>
-    </article>
-  `).join("");
+  jobCount.textContent = `${filteredJobs.length} roles found`;
+  lastUpdated.textContent = `Last updated: ${new Date().toLocaleDateString()}`;
 }
 
-function escapeHTML(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-searchInput.addEventListener("input", renderJobs);
-filters.addEventListener("click", event => {
-  if (!event.target.matches("button")) return;
-  document.querySelectorAll(".filters button").forEach(button => button.classList.remove("active"));
-  event.target.classList.add("active");
-  currentFilter = event.target.dataset.filter;
-  renderJobs();
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    buttons.forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
+    currentFilter = button.dataset.filter;
+    renderJobs();
+  });
 });
 
-loadJobs();
+searchInput.addEventListener("input", renderJobs);
+
+renderJobs();
