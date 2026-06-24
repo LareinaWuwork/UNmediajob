@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UN Media Jobs Tracker</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+        "Helvetica Neue", Arial, sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 7%;
+    }
+
+    .logo {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links a {
+      margin-left: 28px;
+      text-decoration: none;
+      color: #1d1d1f;
+      font-size: 14px;
+    }
+
+    .hero {
+      min-height: 88vh;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 40px;
+      padding: 80px 7%;
+    }
+
+    .hero h1 {
+      font-size: clamp(48px, 7vw, 92px);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      margin-bottom: 28px;
+    }
+
+    .hero p {
+      max-width: 520px;
+      font-size: 21px;
+      color: #6e6e73;
+      line-height: 1.45;
+      margin-bottom: 32px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 13px 22px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .btn-dark {
+      background: #1d1d1f;
+      color: #fff;
+    }
+
+    .btn-light {
+      background: #fff;
+      color: #1d1d1f;
+      border: 1px solid #d2d2d7;
+    }
+
+    .visual {
+      height: 420px;
+      border-radius: 36px;
+      background:
+        radial-gradient(circle at 30% 30%, #ffffff 0, transparent 35%),
+        linear-gradient(145deg, #ffffff, #e8e8ed);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8),
+                  0 30px 80px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .globe {
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, #fff, #d9d9df 55%, #c7c7cc);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+      position: relative;
+    }
+
+    .globe::after {
+      content: "UN";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      font-weight: 800;
+      color: rgba(29,29,31,0.16);
+      letter-spacing: -0.05em;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 0 7% 70px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.85);
+      border-radius: 24px;
+      padding: 28px;
+      text-align: center;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .stat h3 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .stat p {
+      color: #6e6e73;
+      font-size: 14px;
+    }
+
+    section {
+      padding: 80px 7%;
+    }
+
+    .section-title {
+      font-size: clamp(36px, 5vw, 64px);
+      letter-spacing: -0.05em;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: #6e6e73;
+      max-width: 680px;
+      margin: 0 auto 46px;
+      font-size: 18px;
+    }
+
+    .jobs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 28px;
+      min-height: 260px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.04);
+      transition: 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.08);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #f5f5f7;
+      color: #6e6e73;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .card h3 {
+      font-size: 24px;
+      letter-spacing: -0.03em;
+      margin-bottom: 18px;
+    }
+
+    .card p {
+      color: #6e6e73;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .deadline {
+      color: #1d1d1f !important;
+      font-weight: 700;
+      margin-top: 18px;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 20px;
+      color: #0071e3;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .about-box {
+      background: #fff;
+      border-radius: 36px;
+      padding: 48px;
+      max-width: 900px;
+      margin: 0 auto;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.05);
+    }
+
+    .about-box p {
+      color: #6e6e73;
+      font-size: 19px;
+      line-height: 1.65;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 40px;
+    }
+
+    .step {
+      background: #fff;
+      border-radius: 26px;
+      padding: 28px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .number {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #1d1d1f;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .step h3 {
+      margin-bottom: 10px;
+      letter-spacing: -0.03em;
+    }
+
+    .step p {
+      color: #6e6e73;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    footer {
+      text-align: center;
+      padding: 50px 20px;
+      color: #86868b;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 60px;
+      }
+
+      .stats,
+      .jobs,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .visual {
+        height: 300px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">UN Media Jobs Tracker</div>
+    <div class="nav-links">
+      <a href="#jobs">Jobs</a>
+      <a href="#about">About</a>
+      <a href="#how">How it works</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>Find your next impactful role.</h1>
+      <p>
+        A clean, curated tracker for United Nations media, communications,
+        public information, digital content and external relations opportunities.
+      </p>
+
+      <div class="buttons">
+        <a href="#jobs" class="btn btn-dark">View Jobs</a>
+        <a href="#about" class="btn btn-light">Learn More</a>
+      </div>
+    </div>
+
+    <div class="visual">
+      <div class="globe"></div>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <h3>10+</h3>
+      <p>UN Agencies</p>
+    </div>
+    <div class="stat">
+      <h3>50+</h3>
+      <p>Active Opportunities</p>
+    </div>
+    <div class="stat">
+      <h3>20+</h3>
+      <p>Global Locations</p>
+    </div>
+    <div class="stat">
+      <h3>24h</h3>
+      <p>Update Cycle</p>
+    </div>
+  </div>
+
+  <section id="jobs">
+    <h2 class="section-title">Featured roles</h2>
+    <p class="section-subtitle">
+      Selected examples of roles this tracker is designed to monitor.
+    </p>
+
+    <div class="jobs">
+      <div class="card">
+        <span class="tag">Communications</span>
+        <h3>Communication Officer</h3>
+        <p><strong>Agency:</strong> UNDP</p>
+        <p><strong>Location:</strong> Bangkok</p>
+        <p><strong>Type:</strong> Full-time</p>
+        <p class="deadline">Deadline: 30 June 2026</p>
+        <a href="#">View position →</a>
+      </div>
+
+      <div class="card">
+        <span class="tag">Public Information</span>
+        <h3>Public Information Officer</h3>
+        <p><strong>Agency:</strong> UN Secretariat</p>
+        <p><strong>Location:</strong> New York</p>
+        <p><strong>Type:</strong> Temporary</p>
+        <p class="deadline">Deadline: 5 July 2026</p>
+        <a href="#">View position →</a>
+      </div>
+
+      <div class="card">
+        <span class="tag">Digital Media</span>
+        <h3>Social Media Specialist</h3>
+        <p><strong>Agency:</strong> UNICEF</p>
+        <p><strong>Location:</strong> Geneva</p>
+        <p><strong>Type:</strong> Consultant</p>
+        <p class="deadline">Deadline: 12 July 2026</p>
+        <a href="#">View position →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <h2 class="section-title">Built for UN communicators.</h2>
+    <div class="about-box">
+      <p>
+        This project helps organize media, communications, journalism, video,
+        social media, public information and external relations opportunities
+        across the United Nations system. The current version is a clean public
+        website. The next version can connect to GitHub Actions and Python to
+        update listings automatically every day.
+      </p>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2 class="section-title">How it works</h2>
+    <p class="section-subtitle">
+      A simple workflow: collect roles, filter by communications keywords,
+      publish them online, and update regularly.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="number">1</div>
+        <h3>Collect</h3>
+        <p>Search UN career pages for media, communications and public information roles.</p>
+      </div>
+
+      <div class="step">
+        <div class="number">2</div>
+        <h3>Filter</h3>
+        <p>Keep only roles related to journalism, digital content, video and external relations.</p>
+      </div>
+
+      <div class="step">
+        <div class="number">3</div>
+        <h3>Publish</h3>
+        <p>Display selected roles through a clean GitHub Pages website.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built by Lareina Wu · UN Media Jobs Tracker · GitHub Pages
+  </footer>
+
+</body>
+</html>
